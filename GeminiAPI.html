@@ -24,18 +24,52 @@
   </head>
   <body>
     <h1>Call Gemini API</h1>
-    <textarea id="request-text" placeholder="Enter your request text here">
-Explain how AI works</textarea
-    >
+    <!-- Các nút động vật với data-attribute để lưu giá trị pet-type -->
+    <button class="pet-button" data-pet-type="Dog">Dog</button>
+    <button class="pet-button" data-pet-type="Cat">Cat</button>
+    <button class="pet-button" data-pet-type="Fish">Fish</button>
+    <button class="pet-button" data-pet-type="Bird">Bird</button>
+    <button class="pet-button" data-pet-type="Lizard">Lizard</button>
+    <hr />
     <button id="call-api">Call API</button>
     <h2>Response:</h2>
     <pre id="response"></pre>
 
     <script>
+      // Gán sự kiện click cho tất cả các nút động vật
+      const petButtons = document.querySelectorAll(".pet-button");
+
+      petButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const petType = button.getAttribute("data-pet-type");
+          document.getElementById("pet-type").value = petType;
+        });
+      });
+
+      // Xử lý gọi API khi nhấn nút Call API
       document.getElementById("call-api").addEventListener("click", () => {
         const apiUrl =
           "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=YOUR_API_KEY";
-        const requestText = document.getElementById("request-text").value;
+
+        const petType = document.getElementById("pet-type").value; // Lấy giá trị pet-type
+        if (!petType) {
+          document.getElementById("response").textContent =
+            "Please select a pet type!";
+          return;
+        }
+
+        const requestText = `
+        Generate a JSON array of exactly 10 pet names for a ${petType} (5 male, 5 female). 
+        Each object must have these exact properties:
+        {
+          "name": "string",
+          "gender": "male" or "female",
+          "meaning": "string",
+          "popularity": number between 1—100,
+          "Characteristics": "string"
+        }
+        Format as valid JSON only, no additional text.
+        `;
 
         const requestData = {
           contents: [
@@ -69,5 +103,8 @@ Explain how AI works</textarea
           });
       });
     </script>
+
+    <!-- Ẩn input để lưu giá trị pet-type -->
+    <input type="hidden" id="pet-type" />
   </body>
 </html>
